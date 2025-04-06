@@ -1,9 +1,22 @@
 cmake_minimum_required(VERSION 3.14)
 
-project(gpu-math)
+project(gpu-math LANGUAGES C CXX CUDA)
 
-file(GLOB_RECURSE PROJECT_SOURCES "sources/*.cxx")
-file(GLOB_RECURSE PROJECT_INCLUDE "include/*.hxx")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
+find_package(CUDAToolkit REQUIRED)
+
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CUDA_STANDARD_REQUIRED ON)
+
+set(CMAKE_CUDA_ARCHITECTURES 50 52 60 61 70 72 75 80 86 87 89 90 100 101 120)
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Wno-deprecated-gpu-targets")
+set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --extended-lambda")
+
+set(GPU_MATH_EXECUTABLE "gpumath")
+file(GLOB_RECURSE GPU_MATH_SOURCES "sources/*")
+set(GPU_MATH_INCLUDE "include")
+add_executable(${GPU_MATH_EXECUTABLE} ${GPU_MATH_SOURCES})
+target_include_directories(${GPU_MATH_EXECUTABLE} PUBLIC ${GPU_MATH_INCLUDE})
+target_link_libraries(${GPU_MATH_EXECUTABLE} PRIVATE ${WRAPPER_LIBRARY})
