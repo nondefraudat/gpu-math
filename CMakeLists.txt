@@ -2,10 +2,14 @@ cmake_minimum_required(VERSION 3.21)
 
 project(gpu-math LANGUAGES CXX CUDA)
 
+# General
+
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# CUDA
 
 find_package(CUDAToolkit REQUIRED)
 
@@ -16,7 +20,9 @@ set(CMAKE_CUDA_ARCHITECTURES 50 52 60 61 70 72 75 80 86 87 89 90 100 101 120)
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Wno-deprecated-gpu-targets")
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --extended-lambda")
 
-set(GPU_MATH_LIBRARY "gpumath")
+# Target
+
+set(GPU_MATH_LIBRARY ${PROJECT_NAME})
 
 file(GLOB_RECURSE GPU_MATH_SOURCES "sources/*.cu")
 set(GPU_MATH_INCLUDE "include")
