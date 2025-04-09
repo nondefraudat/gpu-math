@@ -14,6 +14,9 @@ class wandering_data {
 	mutable bool _on_device;
 
 public:
+	wandering_data() noexcept
+		: _height(0), _width(0), _size(0), _bytes_count(0),
+		_device_data(nullptr), _host_data(nullptr), _on_device(false) { }
 	wandering_data(uint16_t height, uint16_t width) noexcept;
 
 	inline uint16_t height() const noexcept { return _height; }

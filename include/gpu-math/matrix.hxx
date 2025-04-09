@@ -8,6 +8,7 @@ namespace gpu_math {
 
 class matrix : public wandering_data {
 public:
+	matrix() noexcept : wandering_data() { }
 	matrix(uint16_t height, uint16_t width) noexcept
 			: wandering_data(height, width) { }
 	matrix(uint16_t height, uint16_t width, float fill_value) noexcept
@@ -23,9 +24,13 @@ public:
 
 	void fill(float value) noexcept;
 	matrix multiply(const matrix &other) const noexcept;
+	matrix add(const matrix &other) const noexcept;
 
 	inline matrix operator*(const matrix &other) const noexcept {
 		return multiply(other);
+	}	
+	inline matrix operator+(const matrix &other) const noexcept {
+		return add(other);
 	}
 
 	friend std::ostream &operator<<(std::ostream& os, const matrix &m);

@@ -5,20 +5,32 @@ namespace gpu_math {
 __global__ void fill(float data[], uint32_t size, float value);
 __global__ void multiply(float source[], float target[], float destination[],
 		uint16_t source_height, uint16_t source_width, uint16_t target_widht);
+__global__ void add(float source[], float target[],
+		float destination[], uint32_t size);
 
 void matrix::fill(float value) noexcept {
 	gpu_math::fill<<<size(), 1>>>(device_data(), size(), value);
 }
 
 matrix matrix::multiply(const matrix &other) const noexcept {
-	if (width() == other.height()) {
-		matrix result(height(), other.width(), 0.f);
-		gpu_math::multiply<<<{result.height(), result.width()}, 1>>>(
-				device_data(), other.device_data(), result.device_data(),
-				height(), width(), other.width());
-		return result;
+	if (width() != other.height()) {
+		return matrix(1, 1, std::numeric_limits<float>::quiet_NaN());
 	}
-	return matrix(1, 1, std::numeric_limits<float>::quiet_NaN());
+	matrix result(height(), other.width(), 0.f);
+	gpu_math::multiply<<<{result.height(), result.width()}, 1>>>(
+			device_data(), other.device_data(), result.device_data(),
+			height(), width(), other.width());
+	return result;
+}
+
+matrix matrix::add(const matrix &other) const noexcept {
+	if (height() != other.height() || width() != other.width()) {
+		return matrix(1, 1, std::numeric_limits<float>::quiet_NaN());
+	}
+	matrix result(height(), width(), 0.f);
+	gpu_math::add<<<size(), 1>>>(device_data(), other.device_data(),
+			result.device_data(), size());
+	return result;
 }
 
 std::ostream &operator<<(std::ostream &os, const matrix &m) {
@@ -55,4 +67,11 @@ __global__ void multiply(float source[], float target[], float destination[],
 	}
 }
 
+__global__ void add(float source[], float target[],
+		float destination[], uint32_t size) {
+	uint32_t index = blockIdx.x;
+	if (index < size) {
+		destination[index] = source[index] + target[index];
+	}
+}
 }
