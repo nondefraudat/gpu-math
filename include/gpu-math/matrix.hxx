@@ -1,27 +1,17 @@
 #pragma once
 
-#include <cstdint>
-#include <memory>
+#include "wandering_data.hxx"
 #include <limits>
 #include <iostream>
 
 namespace gpu_math {
 
-class matrix {
-	uint16_t _width, _height, _size, _bytes_count;
-	mutable std::shared_ptr<float[]> _host_data;
-	mutable std::shared_ptr<float[]> _device_data;
-	mutable bool _on_device;
-
+class matrix : public wandering_data {
 public:
-	matrix(uint16_t height, uint16_t width) noexcept;
+	matrix(uint16_t height, uint16_t width) noexcept
+			: wandering_data(height, width) { }
 	matrix(uint16_t height, uint16_t width, float fill_value) noexcept
 			: matrix(height, width) { fill(fill_value); }
-
-	inline uint16_t width() const noexcept { return _width; }
-	inline uint16_t height() const noexcept { return _height; }
-	inline uint16_t size() const noexcept { return _size; }
-	inline uint16_t bytes_count() const noexcept { return _bytes_count; }
 
 	inline float get(uint16_t row, uint16_t column) const noexcept {
 		return get(index(row, column));
@@ -57,16 +47,6 @@ protected:
 			host_data()[index] = value;
 		}
 	}
-
-	inline float *host_data() const noexcept {
-		to_host(); return _host_data.get();
-	}
-	inline float *device_data() const noexcept {
-		to_device(); return _device_data.get();
-	}
-
-	void to_host() const noexcept;
-	void to_device() const noexcept;
 
 };
 

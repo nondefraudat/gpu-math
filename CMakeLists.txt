@@ -25,7 +25,7 @@ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --extended-lambda")
 set(GPU_MATH_LIBRARY ${PROJECT_NAME})
 
 file(GLOB_RECURSE GPU_MATH_SOURCES "sources/*.cu")
-set(GPU_MATH_INCLUDE "include")
+set(GPU_MATH_INCLUDE "include/gpu-math")
 
 add_library(${GPU_MATH_LIBRARY} SHARED ${GPU_MATH_SOURCES})
 target_include_directories(${GPU_MATH_LIBRARY} PUBLIC ${GPU_MATH_INCLUDE})

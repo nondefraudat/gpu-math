@@ -1,4 +1,4 @@
-#include "gpu-math/matrix.hxx"
+#include "matrix.hxx"
 
 namespace gpu_math {
 
@@ -6,20 +6,7 @@ __global__ void fill(float data[], uint32_t size, float value);
 __global__ void multiply(float source[], float target[], float destination[],
 		uint16_t source_height, uint16_t source_width, uint16_t target_widht);
 
-matrix::matrix(uint16_t height, uint16_t width) noexcept 
-		: _height(height), _width(width),
-		_size(width*height) {
-	_host_data = std::shared_ptr<float[]>(new float[_size]);
-	_bytes_count = _size*sizeof(float);
-	float *device_data;
-	cudaMalloc(&device_data, _bytes_count);
-	_device_data = std::shared_ptr<float[]>(device_data,
-			[](auto data) { cudaFree(data); });
-	_on_device = true;
-}
-
-void matrix::fill(float value) noexcept
-{
+void matrix::fill(float value) noexcept {
 	gpu_math::fill<<<size(), 1>>>(device_data(), size(), value);
 }
 
@@ -43,22 +30,6 @@ std::ostream &operator<<(std::ostream &os, const matrix &m) {
 		os << '\n';
 	}
 	return os;
-}
-
-void gpu_math::matrix::to_host() const noexcept {
-	if (_on_device) {
-		cudaMemcpy(_host_data.get(), _device_data.get(),
-				bytes_count(), cudaMemcpyDeviceToHost);
-		_on_device = false;
-	}
-}
-
-void gpu_math::matrix::to_device() const noexcept {
-	if (!_on_device) {
-		cudaMemcpy(_device_data.get(), _host_data.get(),
-				bytes_count(), cudaMemcpyHostToDevice);
-		_on_device = true;
-	}
 }
 
 __global__ void fill(float data[], uint32_t size, float value) {
